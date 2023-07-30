@@ -1,0 +1,40 @@
+version: '3.8'
+services:
+  bitcoind:
+    container_name: bitcoind
+    user: 1000:1000
+    image: lncm/bitcoind:v25.0
+    command: ["-printtoconsole"]
+    restart: always
+    volumes:
+      - ./bitcoin.conf:/data/.bitcoin/bitcoin.conf
+      - bitcoin_data:/data/.bitcoin
+    ports:
+      - "8333:8333"  # Bitcoin P2P port
+      - "8332:8332"  # Bitcoin RPC port
+    networks:
+      - bitcoin_network
+
+  ord:
+    container_name: ord
+    build:
+      context: .
+    command:  ["--data-dir", "/index-data", "--rpc-url", "bitcoind:8332", "server", "--http-port", "8080"]
+    volumes:
+      - index_data:/index-data
+    environment:
+      - ORD_BITCOIN_RPC_USER=$RPC_USER
+      - ORD_BITCOIN_RPC_PASS=$RPC_PASSWORD
+    ports:
+      - "8080:8080"
+    depends_on:
+      - bitcoind
+    networks:
+      - bitcoin_network
+
+volumes:
+  bitcoin_data:
+  index_data:
+
+networks:
+  bitcoin_network:
