@@ -3,7 +3,7 @@ services:
   bitcoind:
     container_name: bitcoind
     user: 1000:1000
-    image: lncm/bitcoind:v25.0
+    image: lncm/bitcoind:v27.0
     command: ["-printtoconsole"]
     restart: always
     volumes:
